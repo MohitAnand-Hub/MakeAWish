@@ -6,16 +6,31 @@
   <title>Indian Coin Toss</title>
   <style>
     body {
-      background: #f0f8ff;
-      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #6e7a6b, #dde1e0);
+      font-family: 'Roboto', sans-serif;
       text-align: center;
-      padding-top: 60px;
+      padding-top: 5%;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 30px;
     }
 
     .coin {
-      width: 150px;
-      height: 150px;
-      margin: 0 auto 30px;
+      width: 180px;
+      height: 180px;
+      margin: 30px auto;
       perspective: 1000px;
     }
 
@@ -23,41 +38,53 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      transition: transform 1s ease-in-out;
+      transition: transform 1.5s ease-in-out;
       transform-style: preserve-3d;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      object-fit: cover;
     }
 
     button {
-      padding: 12px 24px;
-      font-size: 18px;
-      background-color: #4CAF50;
+      padding: 20px 40px;
+      font-size: 22px;
+      background-color: #ff2d00;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 50px;
       cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
     }
 
     button:hover {
-      background-color: #388e3c;
+      background-color: #ff5733;
+      transform: scale(1.1);
     }
 
     .result {
       margin-top: 20px;
-      font-size: 22px;
-      color: #333;
+      font-size: 28px;
+      color: #f4f4f4;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
     }
 
     footer {
-      margin-top: 80px;
-      font-size: 14px;
-      color: #555;
+      margin-top: 50px;
+      font-size: 16px;
+      color: #cccccc;
+    }
+
+    /* Custom cursor for interactive elements */
+    button:hover {
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <h1>Indian Coin Toss</h1>
   <div class="coin" id="coin">
-    <img id="coinImage" src="https://i.imgur.com/Bd4GHFh.png" alt="Coin" />
+    <img id="coinImage" src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Indian_1_Rupee_coin_2011_obverse.jpg" alt="Coin" />
   </div>
   <button onclick="tossCoin()">Toss Coin</button>
   <div class="result" id="result">Click the button to toss</div>
@@ -71,32 +98,40 @@
       const outcomes = [
         {
           side: 'Heads',
-          img: 'https://i.imgur.com/Bd4GHFh.png'
+          img: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Indian_1_Rupee_coin_2011_obverse.jpg'
         },
         {
           side: 'Tails',
-          img: 'https://i.imgur.com/6RgHcpE.png'
+          img: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/Indian_1_Rupee_coin_2011_reverse.jpg'
         }
       ];
 
       const coinImg = document.getElementById('coinImage');
-      document.getElementById('result').textContent = 'Flipping...';
+      const resultText = document.getElementById('result');
 
-      // Start spin
-      coinImg.style.transform = 'rotateY(720deg)';
+      // Play sound on flip (be sure to have sound files or use the HTML5 API)
+      const flipSound = new Audio('https://www.soundjay.com/button/beep-07.wav'); // Sample beep sound
+      flipSound.play();
 
-      // Introduce slight randomness in delay
-      const delay = 900 + Math.floor(Math.random() * 300); // 900ms to 1200ms
+      resultText.textContent = 'Flipping...';
+
+      // Use crypto.getRandomValues() for randomness
+      const randomValues = new Uint32Array(1);
+      window.crypto.getRandomValues(randomValues);
+      const randIndex = randomValues[0] % 2; // 0 or 1
+
+      // Coin flip animation (rotate and spin)
+      const spinDegrees = 1440 + (Math.random() * 360); // Random spin for additional unpredictability
+      coinImg.style.transform = `rotateY(${spinDegrees}deg)`;
+
+      const delay = 1200 + Math.floor(Math.random() * 600); // Random delay for realism
 
       setTimeout(() => {
-        // Combine multiple sources of randomness
-        const now = new Date().getTime();
-        const randIndex = (Math.floor(Math.random() * 1000) + now) % 2;
         const result = outcomes[randIndex];
 
         coinImg.src = result.img;
         coinImg.style.transform = 'rotateY(0deg)';
-        document.getElementById('result').textContent = `Result: ${result.side}`;
+        resultText.textContent = `Result: ${result.side}`;
       }, delay);
     }
   </script>
