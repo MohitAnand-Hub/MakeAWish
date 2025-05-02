@@ -3,64 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Coin Toss</title>
+  <title>Indian Coin Toss</title>
   <style>
     body {
       background: #f0f8ff;
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
-      padding-top: 100px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      padding-top: 60px;
     }
 
     .coin {
       width: 150px;
       height: 150px;
-      background: radial-gradient(circle, #dcdcdc 0%, #f5f5f5 100%);
-      border: 5px solid #ccc;
-      border-radius: 50%;
-      line-height: 150px;
-      font-size: 30px;
-      font-weight: bold;
       margin: 0 auto 30px;
+      perspective: 1000px;
+    }
+
+    .coin img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transition: transform 1s ease-in-out;
+      transform-style: preserve-3d;
       box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      transition: transform 0.6s ease-in-out;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 18px;
       background-color: #4CAF50;
+      color: white;
       border: none;
       border-radius: 8px;
-      color: white;
       cursor: pointer;
     }
 
     button:hover {
-      background-color: #45a049;
+      background-color: #388e3c;
     }
 
     .result {
       margin-top: 20px;
-      font-size: 24px;
+      font-size: 22px;
       color: #333;
     }
 
     footer {
-      margin-top: auto;
-      padding: 20px 0;
+      margin-top: 80px;
       font-size: 14px;
-      color: #666;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="coin" id="coin">?</div>
+  <div class="coin" id="coin">
+    <img id="coinImage" src="https://i.imgur.com/Bd4GHFh.png" alt="Coin" />
+  </div>
   <button onclick="tossCoin()">Toss Coin</button>
-  <div class="result" id="result"></div>
+  <div class="result" id="result">Click the button to toss</div>
 
   <footer>
     Designed and Published by Mohit Anand
@@ -68,15 +68,36 @@
 
   <script>
     function tossCoin() {
-      const outcomes = ['Heads', 'Tails'];
-      const result = outcomes[Math.floor(Math.random() * 2)];
-      const coin = document.getElementById('coin');
-      coin.style.transform = 'rotateY(360deg)';
+      const outcomes = [
+        {
+          side: 'Heads',
+          img: 'https://i.imgur.com/Bd4GHFh.png'
+        },
+        {
+          side: 'Tails',
+          img: 'https://i.imgur.com/6RgHcpE.png'
+        }
+      ];
+
+      const coinImg = document.getElementById('coinImage');
+      document.getElementById('result').textContent = 'Flipping...';
+
+      // Start spin
+      coinImg.style.transform = 'rotateY(720deg)';
+
+      // Introduce slight randomness in delay
+      const delay = 900 + Math.floor(Math.random() * 300); // 900ms to 1200ms
+
       setTimeout(() => {
-        coin.textContent = result;
-        document.getElementById('result').textContent = `Result: ${result}`;
-        coin.style.transform = 'rotateY(0deg)';
-      }, 600);
+        // Combine multiple sources of randomness
+        const now = new Date().getTime();
+        const randIndex = (Math.floor(Math.random() * 1000) + now) % 2;
+        const result = outcomes[randIndex];
+
+        coinImg.src = result.img;
+        coinImg.style.transform = 'rotateY(0deg)';
+        document.getElementById('result').textContent = `Result: ${result.side}`;
+      }, delay);
     }
   </script>
 </body>
