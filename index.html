@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Indian Coin Toss</title>
+  <title>Make A Wish</title>
   <style>
     body {
-      background: linear-gradient(135deg, #6e7a6b, #dde1e0);
+      background: #1e3c72; /* Deep blue background for a stylish look */
+      background: linear-gradient(to right, #1e3c72, #2a5298);
       font-family: 'Roboto', sans-serif;
       text-align: center;
-      padding-top: 5%;
+      padding: 5% 0;
       margin: 0;
       height: 100vh;
       display: flex;
@@ -25,6 +26,7 @@
       letter-spacing: 3px;
       text-transform: uppercase;
       margin-bottom: 30px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     }
 
     .coin {
@@ -32,13 +34,15 @@
       height: 180px;
       margin: 30px auto;
       perspective: 1000px;
+      cursor: pointer;
     }
 
     .coin-face {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background-color: #ffd700;
+      background-image: url('https://example.com/heads-image.png'); /* Your heads image */
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -47,29 +51,12 @@
       color: #333;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       transform-style: preserve-3d;
-      transition: transform 1.5s ease-in-out;
+      transition: transform 1.5s ease-in-out, box-shadow 0.5s ease-in-out;
     }
 
     .coin .tail {
-      background-color: #ff5c33;
-      color: white;
-    }
-
-    button {
-      padding: 20px 40px;
-      font-size: 22px;
-      background-color: #ff2d00;
-      color: white;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
-      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    button:hover {
-      background-color: #ff5733;
-      transform: scale(1.1);
+      background-image: url('https://example.com/tails-image.png'); /* Your tails image */
+      background-size: cover;
     }
 
     .result {
@@ -92,35 +79,42 @@
   </style>
 </head>
 <body>
-  <h1>Indian Coin Toss</h1>
+  <h1>Make A Wish</h1>
   <div class="coin" id="coin">
-    <div id="coinFace" class="coin-face">Heads</div>
+    <div id="coinFace" class="coin-face"></div>
   </div>
-  <button onclick="tossCoin()">Toss Coin</button>
-  <div class="result" id="result">Click the button to toss</div>
+  <div class="result" id="result">Click the coin to toss</div>
 
   <footer>
     Designed and Published by Mohit Anand
   </footer>
 
   <script>
+    const coinFace = document.getElementById('coinFace');
+    const resultText = document.getElementById('result');
+
+    const outcomes = [
+      {
+        side: 'Heads',
+        className: 'coin-face',
+        image: 'https://p.turbosquid.com/ts-thumb/b2/lVDybg/bO/1rupeecoin_00054/png/1694325865/1920x1080/fit_q87/b56f9c0b39ec818a8413c4b480b12064b5ade3b5/1rupeecoin_00054.jpg' // Replace with actual image path for Heads
+      },
+      {
+        side: 'Tails',
+        className: 'coin-face tail',
+        image: 'https://venkatarun.wordpress.com/wp-content/uploads/2015/11/india-1-rupee-2013.jpg?w=300' // Replace with actual image path for Tails
+      }
+    ];
+
+    // Play sound on flip
+    const flipSound = new Audio('https://www.soundjay.com/button/beep-07.wav'); // A flip sound
+    flipSound.preload = "auto";
+
+    // Coin click event listener
+    document.getElementById('coin').addEventListener('click', tossCoin);
+
     function tossCoin() {
-      const outcomes = [
-        {
-          side: 'Heads',
-          className: 'coin-face'
-        },
-        {
-          side: 'Tails',
-          className: 'coin-face tail'
-        }
-      ];
-
-      const coinFace = document.getElementById('coinFace');
-      const resultText = document.getElementById('result');
-
       // Play sound on flip
-      const flipSound = new Audio('https://www.soundjay.com/button/beep-07.wav'); // Sample beep sound
       flipSound.play();
 
       resultText.textContent = 'Flipping...';
@@ -142,9 +136,10 @@
       setTimeout(() => {
         const result = outcomes[randIndex];
 
-        coinFace.textContent = result.side;
-        coinFace.className = result.className;
+        coinFace.style.transition = 'none'; // Disable transition before flipping result
         coinFace.style.transform = 'rotateY(0deg)';
+        coinFace.style.backgroundImage = `url('${result.image}')`; // Change the image for result
+        coinFace.className = result.className;
         resultText.textContent = `Result: ${result.side}`;
       }, delay);
     }
