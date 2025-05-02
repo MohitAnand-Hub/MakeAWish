@@ -1,103 +1,149 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Make A Wish - Coin Toss</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Realistic Coin Toss</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #141E30, #243B55);
-      color: white;
+      background: #1e3c72; /* Deep blue background for a stylish look */
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      font-family: 'Roboto', sans-serif;
+      text-align: center;
+      padding: 5% 0;
+      margin: 0;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      text-align: center;
-      padding: 20px;
+      color: white;
     }
 
     h1 {
       font-size: 3rem;
-      margin-bottom: 20px;
-      letter-spacing: 2px;
-      text-shadow: 0px 2px 10px rgba(0,0,0,0.5);
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     }
 
     .coin {
-      width: 160px;
-      height: 160px;
-      background: #f0f0f0;
-      color: #333;
-      font-size: 2rem;
-      font-weight: bold;
+      width: 180px;
+      height: 180px;
+      margin: 30px auto;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .coin-face {
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
+      background-image: url('https://example.com/heads-image.png'); /* Your heads image */
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
-      cursor: pointer;
-      user-select: none;
-      transition: transform 1s ease;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
+      transition: transform 1.5s ease-in-out, box-shadow 0.5s ease-in-out;
     }
 
-    .coin:hover {
-      transform: scale(1.05);
+    .coin .tail {
+      background-image: url('https://example.com/tails-image.png'); /* Your tails image */
+      background-size: cover;
     }
 
     .result {
-      font-size: 1.5rem;
-      margin-top: 30px;
-      min-height: 40px;
+      margin-top: 20px;
+      font-size: 28px;
+      color: #f4f4f4;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
     }
 
     footer {
-      position: absolute;
-      bottom: 10px;
-      font-size: 14px;
-      color: #ccc;
+      margin-top: 50px;
+      font-size: 16px;
+      color: #cccccc;
+    }
+
+    button:hover {
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <h1>Make A Wish</h1>
-  <div class="coin" id="coin">Click</div>
-  <div class="result" id="result">Tap the coin to toss</div>
-  <footer>Designed and Published by Mohit Anand</footer>
+  <div class="coin" id="coin">
+    <div id="coinFace" class="coin-face"></div>
+  </div>
+  <div class="result" id="result">Click the coin to toss</div>
 
-  <audio id="flipSound" src="https://www.soundjay.com/button/sounds/button-16.mp3" preload="auto"></audio>
+  <footer>
+    Designed and Published by Mohit Anand
+  </footer>
 
   <script>
-    const coin = document.getElementById('coin');
-    const result = document.getElementById('result');
-    const sound = document.getElementById('flipSound');
+    const coinFace = document.getElementById('coinFace');
+    const resultText = document.getElementById('result');
+
+    const outcomes = [
+      {
+        side: 'Heads',
+        className: 'coin-face',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbhExSR2TvUu-VLNYocXf3e8bq1fJgMYcX55DgG_-jA90JxaEt3pXWulk&s=10' // Replace with actual image path for Heads
+      },
+      {
+        side: 'Tails',
+        className: 'coin-face tail',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/1/16/Indian_1_Rupee_Coin_Reverse_or_Tails.jpg' // Replace with actual image path for Tails
+      }
+    ];
+
+    // Play sound on flip
+    const flipSound = new Audio('https://www.soundjay.com/button/beep-07.wav'); // A flip sound
+    flipSound.preload = "auto";
+
+    // Coin click event listener
+    document.getElementById('coin').addEventListener('click', tossCoin);
 
     function tossCoin() {
-      result.textContent = 'Flipping...';
-      sound.currentTime = 0;
-      sound.play();
+      // Play sound on flip
+      flipSound.play();
 
-      coin.style.transform = `rotateY(${1440 + Math.random() * 360}deg)`;
+      resultText.textContent = 'Flipping...';
+
+      // Use crypto.getRandomValues() for cryptographically secure randomness
+      const randomValues = new Uint32Array(1);
+      window.crypto.getRandomValues(randomValues);
+      const randIndex = randomValues[0] % 2; // 0 or 1
+
+      // Coin flip animation (rotate and spin)
+      const spinDegrees = 1440 + (Math.random() * 360); // Random spin for additional unpredictability
+      const randomSpinDuration = 1.2 + Math.random() * 1.5; // Random duration for spinning
+
+      coinFace.style.transition = `transform ${randomSpinDuration}s ease-in-out`; // Randomize spin time
+      coinFace.style.transform = `rotateY(${spinDegrees}deg)`;
+
+      const delay = 1200 + Math.floor(Math.random() * 600); // Random delay for realism
 
       setTimeout(() => {
-        const rand = new Uint32Array(1);
-        crypto.getRandomValues(rand);
-        const outcome = rand[0] % 2 === 0 ? 'HEADS' : 'TAILS';
-        coin.textContent = outcome;
-        result.textContent = `Result: ${outcome}`;
-      }, 1200);
-    }
+        const result = outcomes[randIndex];
 
-    coin.addEventListener('click', tossCoin);
+        coinFace.style.transition = 'none'; // Disable transition before flipping result
+        coinFace.style.transform = 'rotateY(0deg)';
+        coinFace.style.backgroundImage = `url('${result.image}')`; // Change the image for result
+        coinFace.className = result.className;
+        resultText.textContent = `Result: ${result.side}`;
+      }, delay);
+    }
   </script>
 </body>
 </html>
+
